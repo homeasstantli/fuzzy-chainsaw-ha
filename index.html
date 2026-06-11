@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>fami-li</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f8f7; --surface: #ffffff; --surface2: #f2f2f0;
+    --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18; --text2: #6b6b67; --text3: #a0a09c;
+    --blue: #378ADD; --blue-bg: #E6F1FB; --blue-border: #B5D4F4; --blue-text: #185FA5;
+    --green-bg: #EAF3DE; --green-text: #3B6D11;
+    --red-bg: #FCEBEB; --red-text: #A32D2D;
+    --amber-bg: #FAEEDA; --amber-text: #854F0B;
+    --radius: 10px; --radius-sm: 7px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111110; --surface: #1c1c1a; --surface2: #252523;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.18);
+      --text: #f0f0ec; --text2: #9a9a96; --text3: #5a5a57;
+      --blue-bg: #0C447C; --blue-border: #185FA5; --blue-text: #B5D4F4;
+      --green-bg: #27500A; --green-text: #C0DD97;
+      --red-bg: #791F1F; --red-text: #F7C1C1;
+      --amber-bg: #633806; --amber-text: #FAC775;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* LOGIN SCREEN */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  }
+  .login-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 16px; padding: 2.5rem 2rem; width: 340px; text-align: center;
+  }
+  .login-logo {
+    width: 56px; height: 56px; background: var(--blue-bg); border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: var(--blue-text); margin: 0 auto 1rem;
+  }
+  .login-title { font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: .25rem; }
+  .login-title span { color: var(--blue); }
+  .login-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 2rem; }
+  .google-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: .75rem 1rem; border-radius: 8px;
+    border: 0.5px solid var(--border2); background: var(--surface);
+    color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: inherit; transition: background .15s;
+  }
+  .google-btn:hover { background: var(--surface2); }
+  .google-icon { width: 18px; height: 18px; }
+  .login-error { font-size: 12px; color: var(--red-text); margin-top: .75rem; display: none; }
+
+  /* USER BAR */
+  #app-screen { display: none; }
+  .hub { max-width: 900px; margin: 0 auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .brand { display: flex; align-items: center; gap: 10px; padding-bottom: .75rem; border-bottom: 0.5px solid var(--border); }
+  .brand-logo { width: 34px; height: 34px; background: var(--blue-bg); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: var(--blue-text); }
+  .brand-name { font-size: 22px; font-weight: 600; }
+  .brand-name span { color: var(--blue); }
+  .brand-time { margin-left: auto; text-align: right; }
+  .brand-clock { font-size: 19px; font-weight: 500; }
+  .brand-clock .ampm { font-size: 13px; color: var(--text2); margin-left: 3px; }
+  .brand-date { font-size: 12px; color: var(--text3); margin-top: 1px; }
+  .user-area { display: flex; align-items: center; gap: 8px; margin-left: 1rem; }
+  .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 0.5px solid var(--border2); }
+  .user-name { font-size: 13px; color: var(--text2); }
+  .sign-out-btn { background: none; border: 0.5px solid var(--border2); border-radius: 6px; padding: 3px 8px; cursor: pointer; color: var(--text2); font-size: 12px; font-family: inherit; }
+  .sign-out-btn:hover { background: var(--surface2); }
+
+  .row { display: grid; gap: 1rem; }
+  .row-2 { grid-template-columns: 1fr 1fr; }
+  .row-3 { grid-template-columns: 1.2fr 1fr 1fr; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; }
+  .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: .8rem; }
+  .card-header > i { font-size: 15px; color: var(--text2); }
+  .card-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; flex: 1; }
+  .ibtn { background: none; border: 0.5px solid var(--border2); border-radius: 6px; padding: 3px 8px; cursor: pointer; color: var(--text2); font-size: 13px; display: flex; align-items: center; gap: 4px; font-family: inherit; }
+  .ibtn:hover { background: var(--surface2); }
+
+  .weather-main { display: flex; align-items: center; gap: 14px; }
+  .weather-icon { font-size: 34px; color: var(--blue); }
+  .weather-temp { font-size: 36px; font-weight: 500; line-height: 1; }
+  .weather-desc { font-size: 13px; color: var(--text2); margin-top: 3px; }
+  .weather-feel { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .weather-stats { display: flex; margin-top: .75rem; padding-top: .75rem; border-top: 0.5px solid var(--border); }
+  .wstat { flex: 1; text-align: center; }
+  .wstat + .wstat { border-left: 0.5px solid var(--border); }
+  .wl { font-size: 10px; color: var(--text3); }
+  .wv { font-size: 13px; font-weight: 500; margin-top: 2px; }
+
+  .ha-status { font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
+  .ha-status.ok { background: var(--green-bg); color: var(--green-text); }
+  .ha-status.err { background: var(--red-bg); color: var(--red-text); }
+  .ha-status.loading { background: var(--amber-bg); color: var(--amber-text); }
+  .ha-token-row { display: flex; align-items: center; gap: 7px; background: var(--surface2); border-radius: var(--radius-sm); padding: .5rem .75rem; margin-bottom: .8rem; }
+  .ha-token-row label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .ha-token-row input { flex: 1; font-size: 12px; padding: 4px 7px; border: 0.5px solid var(--border2); border-radius: 5px; background: var(--surface); color: var(--text); outline: none; font-family: inherit; letter-spacing: .08em; }
+  .ha-token-row input:focus { border-color: var(--blue); }
+  .ha-connect-btn { font-size: 12px; padding: 4px 11px; border: 0.5px solid var(--blue-border); border-radius: 5px; background: var(--blue-bg); color: var(--blue-text); cursor: pointer; font-weight: 500; font-family: inherit; }
+  .ha-connect-btn:hover { background: var(--blue-border); }
+
+  .ha-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 7px; }
+  .ha-tile { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: .65rem .7rem; display: flex; flex-direction: column; gap: 3px; position: relative; cursor: pointer; }
+  .ha-tile:hover { border-color: var(--border2); }
+  .ha-tile.on { background: var(--blue-bg); border-color: var(--blue-border); }
+  .ha-tile.on .tile-icon { color: var(--blue); }
+  .ha-tile.on .tile-name { color: var(--blue-text); }
+  .ha-tile.on .tile-state { color: var(--blue); }
+  .tile-icon { font-size: 18px; color: var(--text2); }
+  .tile-name { font-size: 12px; font-weight: 500; }
+  .tile-state { font-size: 10px; color: var(--text3); }
+  .tile-del { position: absolute; top: 5px; right: 5px; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 12px; opacity: 0; padding: 2px; }
+  .ha-tile:hover .tile-del { opacity: 1; }
+  .toggle { position: absolute; bottom: 7px; right: 7px; width: 28px; height: 16px; border-radius: 8px; background: #ccc; border: none; cursor: pointer; padding: 0; }
+  .toggle::after { content: ''; display: block; width: 12px; height: 12px; border-radius: 50%; background: #fff; margin: 2px; transition: transform .15s; }
+  .ha-tile.on .toggle { background: var(--blue); }
+  .ha-tile.on .toggle::after { transform: translateX(12px); }
+
+  .notes-list { display: flex; flex-direction: column; gap: 5px; max-height: 200px; overflow-y: auto; }
+  .note-item { display: flex; align-items: flex-start; gap: 8px; padding: 5px 8px; border-radius: 6px; background: var(--surface2); }
+  .note-cb { accent-color: var(--blue); width: 13px; height: 13px; margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+  .note-text { font-size: 13px; line-height: 1.4; flex: 1; }
+  .note-text.done { text-decoration: line-through; color: var(--text3); }
+  .note-del { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 13px; padding: 0; opacity: 0; }
+  .note-item:hover .note-del { opacity: 1; }
+  .add-row { display: flex; gap: 6px; margin-top: 8px; }
+  .add-row input { flex: 1; font-size: 13px; padding: 6px 9px; border: 0.5px solid var(--border2); border-radius: 6px; background: var(--surface); color: var(--text); outline: none; font-family: inherit; }
+  .add-row input:focus { border-color: var(--blue); }
+  .add-row button { padding: 6px 10px; font-size: 14px; border: 0.5px solid var(--border2); border-radius: 6px; background: none; cursor: pointer; color: var(--text2); font-family: inherit; }
+  .add-row button:hover { background: var(--surface2); }
+
+  .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 7px; }
+  .link-item { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: .6rem .4rem; border: 0.5px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; background: var(--surface2); position: relative; }
+  .link-item:hover { border-color: var(--border2); }
+  .link-icon { font-size: 20px; color: var(--blue); }
+  .link-name { font-size: 11px; font-weight: 500; color: var(--text); text-align: center; }
+  .link-host { font-size: 10px; color: var(--text3); text-align: center; }
+  .link-del { position: absolute; top: 3px; right: 3px; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 11px; opacity: 0; padding: 2px; }
+  .link-item:hover .link-del { opacity: 1; }
+  .add-link-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: .6rem .4rem; border: 0.5px dashed var(--border2); border-radius: var(--radius-sm); cursor: pointer; background: none; color: var(--text3); font-size: 11px; font-family: inherit; }
+  .add-link-btn:hover { border-color: var(--blue); color: var(--text2); }
+
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: center; justify-content: center; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 1.4rem; width: 300px; border: 0.5px solid var(--border2); }
+  .modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 1rem; }
+  .modal input, .modal select { width: 100%; font-size: 13px; padding: 7px 9px; border: 0.5px solid var(--border2); border-radius: 6px; background: var(--surface); color: var(--text); outline: none; margin-bottom: 8px; font-family: inherit; }
+  .modal input:focus, .modal select:focus { border-color: var(--blue); }
+  .modal-btns { display: flex; gap: 8px; margin-top: .25rem; }
+  .modal-btns button { flex: 1; padding: 7px; font-size: 13px; border-radius: 6px; cursor: pointer; border: 0.5px solid var(--border2); background: none; color: var(--text); font-family: inherit; }
+  .modal-btns .primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); display: inline-block; margin-left: 4px; opacity: 0; transition: opacity .3s; }
+  .sync-dot.active { opacity: 1; }
+
+  @media (max-width: 640px) {
+    .row-2, .row-3 { grid-template-columns: 1fr; }
+    .row-3 .span2 { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><i class="ti ti-home"></i></div>
+    <div class="login-title">fami<span>-li</span></div>
+    <div class="login-subtitle">Your family hub — sign in to continue</div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Sign in with Google
+    </button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app-screen">
+  <div class="hub">
+    <div class="brand">
+      <div class="brand-logo"><i class="ti ti-home"></i></div>
+      <div class="brand-name">fami<span>-li</span></div>
+      <div class="user-area">
+        <img class="user-avatar" id="user-avatar" src="" alt="avatar" />
+        <span class="user-name" id="user-name"></span>
+        <button class="sign-out-btn" onclick="signOut()">Sign out</button>
+      </div>
+      <div class="brand-time">
+        <div class="brand-clock"><span id="clock">--:--</span><span class="ampm" id="ampm"></span></div>
+        <div class="brand-date" id="date"></div>
+      </div>
+    </div>
+
+    <div class="row row-3">
+      <div class="card">
+        <div class="card-header"><i class="ti ti-cloud"></i><span class="card-label">Weather — Los Altos</span></div>
+        <div class="weather-main">
+          <i class="ti ti-sun weather-icon" id="w-icon"></i>
+          <div>
+            <div class="weather-temp" id="w-temp">--°</div>
+            <div class="weather-desc" id="w-desc">Loading…</div>
+            <div class="weather-feel" id="w-feel"></div>
+          </div>
+        </div>
+        <div class="weather-stats">
+          <div class="wstat"><div class="wl">Humidity</div><div class="wv" id="w-hum">--</div></div>
+          <div class="wstat"><div class="wl">Wind</div><div class="wv" id="w-wind">--</div></div>
+          <div class="wstat"><div class="wl">UV</div><div class="wv" id="w-uv">--</div></div>
+          <div class="wstat"><div class="wl">Visibility</div><div class="wv" id="w-vis">--</div></div>
+        </div>
+      </div>
+
+      <div class="card span2" style="grid-column:span 2">
+        <div class="card-header">
+          <i class="ti ti-smart-home"></i>
+          <span class="card-label">Home Assistant</span>
+          <span class="ha-status loading" id="ha-status">Not connected</span>
+          <button class="ibtn" id="ha-refresh-btn" onclick="haFetchStates()" style="display:none"><i class="ti ti-refresh"></i></button>
+          <button class="ibtn" onclick="showDeviceModal()"><i class="ti ti-plus"></i> Add device</button>
+        </div>
+        <div class="ha-token-row">
+          <label>Token</label>
+          <input id="ha-token" type="password" placeholder="Paste long-lived access token…" />
+          <button class="ha-connect-btn" onclick="connectHA()">Connect</button>
+        </div>
+        <div class="ha-grid" id="ha-grid"></div>
+      </div>
+    </div>
+
+    <div class="row row-2">
+      <div class="card">
+        <div class="card-header">
+          <i class="ti ti-notes"></i>
+          <span class="card-label">Notes & to-dos <span class="sync-dot" id="notes-sync"></span></span>
+          <button class="ibtn" onclick="clearDone()"><i class="ti ti-trash"></i></button>
+        </div>
+        <div class="notes-list" id="notes-list"></div>
+        <div class="add-row">
+          <input id="note-input" type="text" placeholder="Add a note…" onkeydown="if(event.key==='Enter')addNote()" />
+          <button onclick="addNote()"><i class="ti ti-plus"></i></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="ti ti-bookmark"></i>
+          <span class="card-label">Quick links <span class="sync-dot" id="links-sync"></span></span>
+        </div>
+        <div class="links-grid" id="links-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Device modal -->
+<div class="modal-backdrop" id="device-modal">
+  <div class="modal">
+    <h3>Add HA device</h3>
+    <input id="dev-name" type="text" placeholder="Name (e.g. Living room light)" />
+    <input id="dev-entity" type="text" placeholder="Entity ID (e.g. light.living_room)" />
+    <select id="dev-domain">
+      <option value="light">Light</option>
+      <option value="switch">Switch</option>
+      <option value="climate">Climate / thermostat</option>
+      <option value="lock">Lock</option>
+      <option value="fan">Fan</option>
+      <option value="cover">Cover / blinds</option>
+      <option value="media_player">Media player</option>
+      <option value="sensor">Sensor (read-only)</option>
+    </select>
+    <div class="modal-btns">
+      <button onclick="hideDeviceModal()">Cancel</button>
+      <button class="primary" onclick="saveDevice()">Add device</button>
+    </div>
+  </div>
+</div>
+
+<!-- Link modal -->
+<div class="modal-backdrop" id="link-modal">
+  <div class="modal">
+    <h3>Add link</h3>
+    <input id="link-name-in" type="text" placeholder="Name (e.g. GitHub)" />
+    <input id="link-url-in" type="text" placeholder="https://…" />
+    <div class="modal-btns">
+      <button onclick="hideLinkModal()">Cancel</button>
+      <button class="primary" onclick="saveLink()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC68S2RgV08A9pYxPNXYBpD5uQxCDmfyJU",
+  authDomain: "home-assistant-7fec2.firebaseapp.com",
+  projectId: "home-assistant-7fec2",
+  storageBucket: "home-assistant-7fec2.firebasestorage.app",
+  messagingSenderId: "733458362374",
+  appId: "1:733458362374:web:67b52eb96fce72d68d1387",
+  measurementId: "G-9STQJ2WPBW"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const HA_URL = 'http://192.168.0.206:8123';
+const domainIcons = { light:'ti-bulb', switch:'ti-toggle-left', climate:'ti-temperature', lock:'ti-lock', fan:'ti-propeller', cover:'ti-layout-bottombar', media_player:'ti-player-play', sensor:'ti-activity' };
+
+let currentUser = null;
+let haToken = '';
+let haTiles = [];
+let notes = [];
+let links = [];
+let nextId = 10;
+let unsub = null;
+
+// Expose functions to global scope for inline handlers
+window.signInWithGoogle = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    const el = document.getElementById('login-error');
+    el.textContent = 'Sign-in failed: ' + e.message;
+    el.style.display = 'block';
+  }
+};
+
+window.signOut = async () => {
+  if (unsub) unsub();
+  await fbSignOut(auth);
+};
+
+// Auth state
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
+    document.getElementById('user-avatar').src = user.photoURL || '';
+    loadUserData();
+    startClock();
+    loadWeather();
+  } else {
+    currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display = 'none';
+    if (unsub) { unsub(); unsub = null; }
+  }
+});
+
+// Firestore helpers
+function userDoc() { return doc(db, 'users', currentUser.uid); }
+
+async function loadUserData() {
+  const snap = await getDoc(userDoc());
+  const data = snap.exists() ? snap.data() : {};
+  haToken = data.haToken || '';
+  haTiles = data.haTiles || [
+    { id:0, name:'Living room', entity:'light.living_room', domain:'light', on:false },
+    { id:1, name:'Bedroom', entity:'light.bedroom', domain:'light', on:false },
+    { id:2, name:'Front door', entity:'lock.front_door', domain:'lock', on:false },
+    { id:3, name:'Thermostat', entity:'climate.thermostat', domain:'climate', on:true },
+  ];
+  notes = data.notes || [
+    { text:'Set up HA integrations', done:false },
+    { text:'Check Govee LED strips', done:false },
+    { text:'Update dashboard', done:true },
+  ];
+  links = data.links || [
+    { name:'Home Assistant', url:'http://192.168.0.206:8123', icon:'ti-smart-home' },
+    { name:'GitHub', url:'https://github.com', icon:'ti-brand-github' },
+    { name:'Gmail', url:'https://mail.google.com', icon:'ti-mail' },
+    { name:'YouTube', url:'https://youtube.com', icon:'ti-brand-youtube' },
+  ];
+  nextId = data.nextId || 10;
+  if (haToken) document.getElementById('ha-token').value = haToken;
+  renderHa(); renderNotes(); renderLinks();
+  if (haToken) connectHA();
+
+  // Live sync
+  unsub = onSnapshot(userDoc(), snap => {
+    if (!snap.exists()) return;
+    const d = snap.data();
+    if (JSON.stringify(d.notes) !== JSON.stringify(notes)) { notes = d.notes || []; renderNotes(); }
+    if (JSON.stringify(d.links) !== JSON.stringify(links)) { links = d.links || []; renderLinks(); }
+    if (JSON.stringify(d.haTiles) !== JSON.stringify(haTiles)) { haTiles = d.haTiles || []; renderHa(); }
+  });
+}
+
+async function save(fields) {
+  if (!currentUser) return;
+  await setDoc(userDoc(), fields, { merge: true });
+}
+
+function flashSync(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 800);
+}
+
+// Clock
+function startClock() {
+  function tick() {
+    const n = new Date();
+    let h = n.getHours();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    const m = n.getMinutes().toString().padStart(2,'0');
+    document.getElementById('clock').textContent = h + ':' + m;
+    document.getElementById('ampm').textContent = ' ' + ampm;
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('date').textContent = days[n.getDay()] + ', ' + months[n.getMonth()] + ' ' + n.getDate();
+  }
+  tick(); setInterval(tick, 10000);
+}
+
+// Weather
+async function loadWeather() {
+  try {
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.385&longitude=-122.083&current=temperature_2m,apparent_temperature,weathercode,relative_humidity_2m,wind_speed_10m,uv_index,visibility&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FLos_Angeles');
+    const d = await r.json(); const c = d.current;
+    document.getElementById('w-temp').textContent = Math.round(c.temperature_2m) + '°F';
+    document.getElementById('w-feel').textContent = 'Feels like ' + Math.round(c.apparent_temperature) + '°F';
+    document.getElementById('w-hum').textContent = c.relative_humidity_2m + '%';
+    document.getElementById('w-wind').textContent = Math.round(c.wind_speed_10m) + ' mph';
+    document.getElementById('w-uv').textContent = Math.round(c.uv_index);
+    document.getElementById('w-vis').textContent = Math.round(c.visibility / 1000) + ' km';
+    const wc = c.weathercode;
+    let desc = 'Clear', icon = 'ti-sun';
+    if (wc >= 1 && wc <= 3) { desc = 'Partly cloudy'; icon = 'ti-cloud-sun'; }
+    else if (wc >= 45 && wc <= 48) { desc = 'Foggy'; icon = 'ti-mist'; }
+    else if (wc >= 51 && wc <= 67) { desc = 'Rainy'; icon = 'ti-cloud-rain'; }
+    else if (wc >= 80) { desc = 'Stormy'; icon = 'ti-cloud-storm'; }
+    document.getElementById('w-desc').textContent = desc;
+    document.getElementById('w-icon').className = 'ti ' + icon + ' weather-icon';
+  } catch { document.getElementById('w-desc').textContent = 'Unavailable'; }
+}
+
+// HA
+function setStatus(txt, cls) {
+  const el = document.getElementById('ha-status');
+  el.textContent = txt; el.className = 'ha-status ' + cls;
+}
+
+window.connectHA = async () => {
+  haToken = (document.getElementById('ha-token').value || '').trim();
+  if (!haToken) { setStatus('Paste a token first', 'err'); return; }
+  await save({ haToken });
+  setStatus('Connecting…', 'loading');
+  try {
+    const r = await fetch(HA_URL + '/api/', { headers: { 'Authorization': 'Bearer ' + haToken } });
+    if (r.ok) { setStatus('Connected', 'ok'); document.getElementById('ha-refresh-btn').style.display = ''; haFetchStates(); }
+    else setStatus('Auth failed', 'err');
+  } catch { setStatus('Cannot reach HA', 'err'); }
+};
+
+window.haFetchStates = async () => {
+  if (!haToken) return;
+  try {
+    const r = await fetch(HA_URL + '/api/states', { headers: { 'Authorization': 'Bearer ' + haToken } });
+    if (!r.ok) return;
+    const states = await r.json();
+    haTiles = haTiles.map(t => {
+      const s = states.find(x => x.entity_id === t.entity);
+      if (s) t.on = ['on','locked','heat','cool','auto'].includes(s.state);
+      return t;
+    });
+    await save({ haTiles });
+    renderHa();
+  } catch {}
+};
+
+function renderHa() {
+  document.getElementById('ha-grid').innerHTML = haTiles.map(t => `
+    <div class="ha-tile ${t.on ? 'on' : ''}">
+      <i class="ti ${domainIcons[t.domain] || 'ti-smart-home'} tile-icon"></i>
+      <span class="tile-name">${t.name}</span>
+      <span class="tile-state">${t.on ? 'On' : 'Off'}</span>
+      <button class="tile-del" onclick="delDevice(${t.id})"><i class="ti ti-x"></i></button>
+      ${t.domain !== 'sensor' ? `<button class="toggle" onclick="toggleTile(${t.id})" aria-label="Toggle ${t.name}"></button>` : ''}
+    </div>
+  `).join('');
+}
+
+window.toggleTile = async (id) => {
+  const t = haTiles.find(x => x.id === id); if (!t) return;
+  t.on = !t.on; renderHa();
+  await save({ haTiles });
+  if (haToken) {
+    try {
+      await fetch(`${HA_URL}/api/services/${t.domain}/${t.on ? 'turn_on' : 'turn_off'}`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + haToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: t.entity })
+      });
+    } catch {}
+  }
+};
+
+window.delDevice = async (id) => {
+  haTiles = haTiles.filter(x => x.id !== id);
+  await save({ haTiles }); renderHa();
+};
+
+window.showDeviceModal = () => document.getElementById('device-modal').classList.add('open');
+window.hideDeviceModal = () => {
+  document.getElementById('device-modal').classList.remove('open');
+  document.getElementById('dev-name').value = '';
+  document.getElementById('dev-entity').value = '';
+};
+window.saveDevice = async () => {
+  const name = document.getElementById('dev-name').value.trim();
+  const entity = document.getElementById('dev-entity').value.trim();
+  const domain = document.getElementById('dev-domain').value;
+  if (!name || !entity) return;
+  haTiles.push({ id: nextId++, name, entity, domain, on: false });
+  await save({ haTiles, nextId }); hideDeviceModal(); renderHa();
+  if (haToken) haFetchStates();
+};
+
+// Notes
+function renderNotes() {
+  const el = document.getElementById('notes-list');
+  if (!notes.length) { el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:4px 8px">No notes yet</div>'; return; }
+  el.innerHTML = notes.map((n, i) => `
+    <div class="note-item">
+      <input class="note-cb" type="checkbox" ${n.done ? 'checked' : ''} onchange="toggleNote(${i})">
+      <span class="note-text ${n.done ? 'done' : ''}">${n.text}</span>
+      <button class="note-del" onclick="delNote(${i})"><i class="ti ti-x"></i></button>
+    </div>
+  `).join('');
+}
+window.addNote = async () => {
+  const inp = document.getElementById('note-input');
+  const txt = inp.value.trim(); if (!txt) return;
+  notes.unshift({ text: txt, done: false }); inp.value = '';
+  renderNotes(); flashSync('notes-sync'); await save({ notes });
+};
+window.toggleNote = async (i) => { notes[i].done = !notes[i].done; renderNotes(); flashSync('notes-sync'); await save({ notes }); };
+window.delNote = async (i) => { notes.splice(i, 1); renderNotes(); await save({ notes }); };
+window.clearDone = async () => { notes = notes.filter(n => !n.done); renderNotes(); await save({ notes }); };
+
+// Links
+function renderLinks() {
+  document.getElementById('links-grid').innerHTML = links.map((l, i) => `
+    <a class="link-item" href="${l.url}" target="_blank" rel="noopener">
+      <i class="ti ${l.icon || 'ti-link'} link-icon"></i>
+      <span class="link-name">${l.name}</span>
+      <span class="link-host">${(() => { try { return new URL(l.url).hostname; } catch { return l.url; } })()}</span>
+      <button class="link-del" onclick="event.preventDefault();delLink(${i})"><i class="ti ti-x"></i></button>
+    </a>
+  `).join('') + `<button class="add-link-btn" onclick="showLinkModal()"><i class="ti ti-plus" style="font-size:17px"></i><span>Add</span></button>`;
+}
+window.showLinkModal = () => document.getElementById('link-modal').classList.add('open');
+window.hideLinkModal = () => {
+  document.getElementById('link-modal').classList.remove('open');
+  document.getElementById('link-name-in').value = '';
+  document.getElementById('link-url-in').value = '';
+};
+window.saveLink = async () => {
+  const name = document.getElementById('link-name-in').value.trim();
+  let url = document.getElementById('link-url-in').value.trim();
+  if (!name || !url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  links.push({ name, url, icon: 'ti-link' });
+  await save({ links }); hideLinkModal(); renderLinks(); flashSync('links-sync');
+};
+window.delLink = async (i) => { links.splice(i, 1); await save({ links }); renderLinks(); };
+
+</script>
+</body>
+</html>
